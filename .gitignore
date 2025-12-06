@@ -1,0 +1,35 @@
+# Kubernetes
+*.kubeconfig
+kubeconfig
+.kube/
+
+# Secrets and sensitive data
+*.key
+*.pem
+*.crt
+*-key.yaml
+*-secret.yaml
+secrets/
+
+# IDE and Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+*.tmp
+*.log
+tmp/
+logs/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Backup files
+*.bak
+backup/

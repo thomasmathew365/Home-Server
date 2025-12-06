@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rustdesk-hbbs
+  namespace: rustdesk
+  labels:
+    app: rustdesk-hbbs
+spec:
+  type: NodePort
+  selector:
+    app: rustdesk-hbbs
+  ports:
+  - name: nat-tcp
+    port: 21115
+    targetPort: 21115
+    nodePort: 31115
+    protocol: TCP
+  - name: id-tcp
+    port: 21116
+    targetPort: 21116
+    nodePort: 31116
+    protocol: TCP
+  - name: id-udp
+    port: 21116
+    targetPort: 21116
+    nodePort: 31116
+    protocol: UDP
+  - name: web
+    port: 21118
+    targetPort: 21118
+    nodePort: 31118
+    protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rustdesk-hbbr
+  namespace: rustdesk
+  labels:
+    app: rustdesk-hbbr
+spec:
+  type: NodePort
+  selector:
+    app: rustdesk-hbbr
+  ports:
+  - name: relay-tcp
+    port: 21117
+    targetPort: 21117
+    nodePort: 31117
+    protocol: TCP
+  - name: relay-udp
+    port: 21119
+    targetPort: 21119
+    nodePort: 31119
+    protocol: UDP

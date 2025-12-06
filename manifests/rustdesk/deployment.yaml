@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rustdesk-hbbs
+  namespace: rustdesk
+  labels:
+    app: rustdesk-hbbs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rustdesk-hbbs
+  template:
+    metadata:
+      labels:
+        app: rustdesk-hbbs
+    spec:
+      nodeSelector:
+        workload: rustdesk
+      containers:
+      - name: hbbs
+        image: rustdesk/rustdesk-server:latest
+        command: ["hbbs"]
+        args: ["-r", "rustdesk-hbbr:21117"]
+        ports:
+        - containerPort: 21115
+          name: nat-tcp
+          protocol: TCP
+        - containerPort: 21116
+          name: id-tcp
+          protocol: TCP
+        - containerPort: 21116
+          name: id-udp
+          protocol: UDP
+        - containerPort: 21118
+          name: web
+          protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        hostPath:
+          path: /var/lib/rustdesk/hbbs
+          type: DirectoryOrCreate
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rustdesk-hbbr
+  namespace: rustdesk
+  labels:
+    app: rustdesk-hbbr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rustdesk-hbbr
+  template:
+    metadata:
+      labels:
+        app: rustdesk-hbbr
+    spec:
+      nodeSelector:
+        workload: rustdesk
+      containers:
+      - name: hbbr
+        image: rustdesk/rustdesk-server:latest
+        command: ["hbbr"]
+        ports:
+        - containerPort: 21117
+          name: relay-tcp
+          protocol: TCP
+        - containerPort: 21119
+          name: relay-udp
+          protocol: UDP
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        hostPath:
+          path: /var/lib/rustdesk/hbbr
+          type: DirectoryOrCreate

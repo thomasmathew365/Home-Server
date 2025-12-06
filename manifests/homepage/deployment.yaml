@@ -25,6 +25,8 @@ spec:
           value: "google"
         - name: LOG_TARGETS
           value: "stdout"
+        - name: HOMEPAGE_ALLOWED_HOSTS
+          value: "0.0.0.0"
         ports:
         - name: http
           containerPort: 3000

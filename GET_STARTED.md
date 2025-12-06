@@ -53,7 +53,7 @@ sudo k3s kubectl get nodes
 Save these values:
 ```bash
 # Your laptop IP
-hostname -I | awk '{print $1}'
+ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1' | head -1
 
 # Node token for desktop
 sudo cat /var/lib/rancher/k3s/server/node-token
@@ -122,7 +122,7 @@ kubectl get pods -n rustdesk -w
 
 1. Get laptop IP:
 ```bash
-hostname -I | awk '{print $1}'
+ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1' | head -1
 ```
 
 2. Download RustDesk client from [rustdesk.com](https://rustdesk.com)

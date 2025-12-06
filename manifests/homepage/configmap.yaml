@@ -65,5 +65,4 @@ data:
             - icon: youtube.png
               href: https://youtube.com
 
-  docker.yaml: |
-    # Docker configuration (empty for now)
+  docker.yaml: ""

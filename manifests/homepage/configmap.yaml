@@ -22,17 +22,11 @@ data:
             icon: rustdesk.png
             href: http://192.168.0.6:31116
             description: Self-hosted remote desktop
-            server: my-kubernetes
-            container: rustdesk-hbbs
-            namespace: rustdesk
 
         - ArgoCD:
             icon: argocd.png
             href: https://localhost:8080
             description: GitOps continuous delivery
-            server: my-kubernetes
-            container: argocd-server
-            namespace: argocd
 
   widgets.yaml: |
     - logo:

@@ -66,3 +66,7 @@ data:
               href: https://youtube.com
 
   docker.yaml: ""
+
+  custom.css: ""
+
+  custom.js: ""

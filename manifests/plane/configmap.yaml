@@ -32,11 +32,16 @@ data:
   # Application URLs
   WEB_URL: "http://192.168.0.4:30002"
   CORS_ALLOWED_ORIGINS: "http://192.168.0.4:30002"
+  NEXT_PUBLIC_API_BASE_URL: "http://192.168.0.4:30002"
 
   # App Settings
   DEBUG: "0"
   SENTRY_DSN: ""
   SENTRY_ENVIRONMENT: "production"
+
+  # Instance Settings
+  MACHINE_SIGNATURE: "plane-homeserver"
+  INSTANCE_ADMIN_EMAIL: "admin@plane.local"
 
   # Security
   ENABLE_SIGNUP: "1"

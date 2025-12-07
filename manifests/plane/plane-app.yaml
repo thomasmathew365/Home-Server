@@ -28,6 +28,12 @@ spec:
         env:
         - name: NEXT_PUBLIC_API_BASE_URL
           value: "http://192.168.0.4:30002"
+        - name: NEXT_PUBLIC_DEPLOY_URL
+          value: "http://192.168.0.4:30002"
+        - name: NEXT_PUBLIC_SPACE_BASE_URL
+          value: "http://192.168.0.4:30002"
+        - name: NEXT_PUBLIC_WEB_BASE_URL
+          value: "http://192.168.0.4:30002"
 ---
 apiVersion: apps/v1
 kind: Deployment

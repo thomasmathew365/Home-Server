@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: plane-proxy-config
+  namespace: plane
+data:
+  nginx.conf: |
+    events {
+        worker_connections 1024;
+    }
+
+    http {
+        sendfile on;
+        client_max_body_size 100M;
+
+        upstream web {
+            server plane-web:3000;
+        }
+
+        upstream api {
+            server plane-api:8000;
+        }
+
+        server {
+            listen 80;
+            server_name _;
+
+            location / {
+                proxy_pass http://web;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            location /api/ {
+                proxy_pass http://api/api/;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            location /auth/ {
+                proxy_pass http://api/auth/;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plane-proxy
+  namespace: plane
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plane-proxy
+  template:
+    metadata:
+      labels:
+        app: plane-proxy
+    spec:
+      nodeSelector:
+        workload: rustdesk
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: plane-proxy-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plane-proxy
+  namespace: plane
+spec:
+  type: NodePort
+  selector:
+    app: plane-proxy
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30002

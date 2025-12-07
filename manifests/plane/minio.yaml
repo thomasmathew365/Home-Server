@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plane-minio
+  namespace: plane
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plane-minio
+  template:
+    metadata:
+      labels:
+        app: plane-minio
+    spec:
+      containers:
+      - name: minio
+        image: minio/minio:latest
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - minio server /data --console-address :9001
+        ports:
+        - containerPort: 9000
+          name: api
+        - containerPort: 9001
+          name: console
+        envFrom:
+        - secretRef:
+            name: plane-secrets
+        volumeMounts:
+        - name: minio-data
+          mountPath: /data
+      volumes:
+      - name: minio-data
+        hostPath:
+          path: /var/lib/plane/minio
+          type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plane-minio
+  namespace: plane
+spec:
+  selector:
+    app: plane-minio
+  ports:
+  - port: 9000
+    targetPort: 9000
+    name: api
+  - port: 9001
+    targetPort: 9001
+    name: console

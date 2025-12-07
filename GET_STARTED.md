@@ -70,6 +70,11 @@ curl -sfL https://get.k3s.io | K3S_URL=https://<LAPTOP_IP>:6443 K3S_TOKEN=<NODE_
 mkdir -p ~/.kube
 sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 sudo chown $USER:$USER ~/.kube/config
+
+# Add KUBECONFIG to your shell configuration
+echo 'export KUBECONFIG=~/.kube/config' >> ~/.zshrc  # or ~/.bashrc for bash
+source ~/.zshrc  # or source ~/.bashrc
+
 kubectl get nodes  # Should show both nodes
 ```
 
@@ -100,7 +105,7 @@ kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -
 kubectl port-forward svc/argocd-server -n argocd 8080:443 &
 
 # Get the password
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
+
 ```
 
 Open browser: `https://localhost:8080`
@@ -118,7 +123,28 @@ Watch it deploy in ArgoCD UI or:
 kubectl get pods -n rustdesk -w
 ```
 
-### Step 7: Connect RustDesk Client
+### Step 7: Get RustDesk Public Key
+
+Get the RustDesk server's public key (needed for client configuration).
+
+**Method 1: From kubectl logs**
+```bash
+sudo kubectl -n rustdesk logs deployment/rustdesk-hbbs | grep "Public Key"
+```
+
+**Method 2: From the filesystem** (if kubectl doesn't work)
+```bash
+sudo cat /var/lib/rustdesk/hbbs/id_ed25519.pub
+```
+
+This will output something like:
+```
+Public Key: SsF2YzCVaNjYN5z3qEdiCKmxBh87krAcslsJEmmsguw=
+```
+
+Save this key - you'll need it for client configuration.
+
+### Step 8: Connect RustDesk Client
 
 1. Get laptop IP:
 ```bash
@@ -130,8 +156,55 @@ ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1' | he
 3. In client settings, set:
    - ID Server: `<LAPTOP_IP>:31116`
    - Relay Server: `<LAPTOP_IP>:31117`
+   - Key: `<PUBLIC_KEY from Step 7>`
 
 4. Done! You can now connect to devices using your self-hosted RustDesk server.
+
+### Step 9: Setup Unattended Access (Optional)
+
+To enable unattended access on remote machines:
+
+1. **Install RustDesk client on the remote machine**
+
+2. **Configure it to run as a service:**
+```bash
+# Create systemd user service
+mkdir -p ~/.config/systemd/user
+
+cat > ~/.config/systemd/user/rustdesk.service << 'EOF'
+[Unit]
+Description=RustDesk Remote Desktop
+After=graphical-session.target
+
+[Service]
+Type=simple
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=$HOME/.Xauthority
+ExecStart=/usr/bin/rustdesk
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target
+EOF
+
+# Enable and start the service
+systemctl --user daemon-reload
+systemctl --user enable rustdesk
+systemctl --user start rustdesk
+```
+
+3. **Configure RustDesk on the remote machine:**
+   - Click the RustDesk icon in system tray
+   - Go to Settings → Configure ID/Relay Server
+   - Set ID Server: `<LAPTOP_IP>:31116`
+   - Set Relay Server: `<LAPTOP_IP>:31117`
+   - Set Key: `<PUBLIC_KEY from Step 7>`
+   - Go to Security settings
+   - Set a permanent password
+   - Enable "Direct IP Access" with port **31116**
+
+4. Now you can connect without needing to accept each connection!
 
 ## Important Files to Know
 

@@ -20,13 +20,18 @@ data:
     - Services:
         - RustDesk:
             icon: rustdesk.png
-            href: http://192.168.0.6:31116
+            href: http://192.168.0.4:31116
             description: Self-hosted remote desktop
 
         - ArgoCD:
-            icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/argo-cd.pngs
-            href: http://localhost:30001
+            icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/argo-cd.png
+            href: http://192.168.0.4:30001
             description: GitOps continuous delivery
+
+        - Plane:
+            icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/plane.png
+            href: http://192.168.0.4:30002
+            description: Project management platform
 
   widgets.yaml: |
     - logo:

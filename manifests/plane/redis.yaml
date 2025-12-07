@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plane-redis
+  namespace: plane
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plane-redis
+  template:
+    metadata:
+      labels:
+        app: plane-redis
+    spec:
+      containers:
+      - name: redis
+        image: valkey/valkey:7.2.5-alpine
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+      volumes:
+      - name: redis-data
+        hostPath:
+          path: /var/lib/plane/redis
+          type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plane-redis
+  namespace: plane
+spec:
+  selector:
+    app: plane-redis
+  ports:
+  - port: 6379
+    targetPort: 6379

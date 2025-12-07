@@ -25,7 +25,7 @@ data:
 
         - ArgoCD:
             icon: argocd.png
-            href: https://localhost:8080
+            href: http://localhost:30001
             description: GitOps continuous delivery
 
   widgets.yaml: |

@@ -70,3 +70,5 @@ data:
   custom.css: ""
 
   custom.js: ""
+
+  proxmox.yaml: ""

@@ -24,7 +24,7 @@ data:
             description: Self-hosted remote desktop
 
         - ArgoCD:
-            icon: argocd.png
+            icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/argo-cd.pngs
             href: http://localhost:30001
             description: GitOps continuous delivery
 
